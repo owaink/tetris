@@ -4,6 +4,8 @@
 #define DEFAULT_BOARD_ROWS 20
 #define DEFAULT_BOARD_COLUMNS 10
 #define INITIAL_DROP_RATE 1 // Seconds per line
+#define OCCUPIED 1
+#define EMPTY 0
 
 enum Tetrimino {
     O_block, // Square block, yellow
@@ -29,58 +31,85 @@ typedef struct {
 } Block;
 
 typedef struct {
-    int score;
     int rows;
     int columns;
-    int* gameboard;
-    struct Block* currentBlock;
+    int* playarea;
+} Gameboard;
+
+typedef struct {
+    int score;
+    Gameboard* gb;
+    Block* currentBlock;
     int heldBlock;
 } Game;
 
+int init_playarea(Gameboard* gb) {
+    gb->rows = DEFAULT_BOARD_ROWS;
+    gb->columns = DEFAULT_BOARD_COLUMNS;
+    gb->playarea = (int*) 
+                    calloc(gb->rows * gb->columns, sizeof(int));
+    return 0;
+}
 int init_game(Game* game) {
     game->score = 0;
-    game->rows = DEFAULT_BOARD_ROWS;
-    game->columns = DEFAULT_BOARD_COLUMNS;
-    game->gameboard = (int*) calloc(game->rows * game->columns, sizeof(int));
     game->heldBlock = emptyBlock;
-    
+    game->gb = calloc(1, sizeof(Gameboard));
+    init_playarea(game->gb);
 
     return 0;
 }
 
-int is_square_occupied(Game* game, int row, int column) {
-    return game->gameboard[row * game->columns + column];
+int get_square(Gameboard* gb, int row, int column) {
+    return gb->playarea[row * gb->columns + column];
 }
 
-int is_row_full(Game* game, int row) {
+int set_square(Gameboard* gb, int row, int column, int occupied) {
+    gb->playarea[row * gb->columns + column] = occupied;
+    return 0;
+}
+
+int is_row_full(Gameboard* game, int row) {
     int col;
 
     for(col = 0; col < game->columns; ++col) {
-        if(!is_square_occupied(game, row, col)) {
+        if(!get_square(game, row, col)) {
             return 0;
         }
     }
     return 1;
 }
 
+int clear_row(Gameboard* gb, int row) {
+    int col;
+    for(col = 0; col < gb->columns; ++col) {
+        set_square(gb, row, col, EMPTY);
+    }
+}
+
+int lower_board(Gameboard* gb, int clearedRow) {
+    int row, col;
+    for(row = clearedRow; row > 0; --row) {
+        for(col = 0; col < gb->columns; ++col) {
+            set_square(gb, row, col, get_square(gb, row-1, col));
+        }
+    }
+    clear_row(gb, 0);
+}
 
 
-int print_game(Game* game) {
+int print_gb(Gameboard* gb) {
+    int row, column;
     printf(
-        "Score: %d\n"
         "Rows: %d\n"
         "Columns: %d\n"
         "Gameboard: \n",
-        game->score,
-        game->rows,
-        game->columns
+        gb->rows,
+        gb->columns
     );
-    int row, column;
-    
-    for(row = 0; row < game->rows; ++row) {
+    for(row = 0; row < gb->rows; ++row) {
         //printf("%d: ", row);
-        for(column = 0; column < game->columns; ++column) {
-            if(is_square_occupied(game, row,column)) {
+        for(column = 0; column < gb->columns; ++column) {
+            if(get_square(gb, row,column)) {
                 printf("X");
             } else {
                 printf("O");
@@ -89,13 +118,22 @@ int print_game(Game* game) {
         printf("\n");
     }
 }
+int print_game(Game* game) {
+    printf(
+        "Score: %d\n",
+        game->score
+    );
+    print_gb(game->gb);
+}
 
 int main(void* argc, void* argv) {
-    Game* game;
-    game = (Game*) malloc(sizeof(Game));
-
+    Game* game = (Game*) calloc(1, sizeof(Game));
     init_game(game);
+    set_square(game->gb, game->gb->rows-1,game->gb->columns-1, OCCUPIED);
+    set_square(game->gb, 0,0, OCCUPIED);
     print_game(game);
     
+    lower_board(game->gb, 10);
+    print_game(game);
     return 0;
 }
