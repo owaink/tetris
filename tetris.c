@@ -4,6 +4,7 @@
 #define DEFAULT_BOARD_ROWS 20
 #define DEFAULT_BOARD_COLUMNS 10
 #define INITIAL_DROP_RATE 1 // Seconds per line
+#define TICK_RATE 60 // Ticks per second
 #define OCCUPIED 1
 #define EMPTY 0
 
@@ -18,16 +19,10 @@ enum Tetrimino {
     emptyBlock, // No Block
 };
 
-enum Rotation {
-    UP,
-    RIGHT,
-    DOWN,
-    LEFT,
-};
-
 typedef struct {
     int type;
-    int rotation;
+    int* area;
+
 } Block;
 
 typedef struct {
@@ -43,11 +38,43 @@ typedef struct {
     int heldBlock;
 } Game;
 
+int init_block(Block* b, int type) {
+    b->type = emptyBlock;
+    b->area = calloc(16, sizeof(int));
+    switch (type)
+    {
+    case O_block:
+        break;
+
+    case I_block:
+        break;
+
+    case T_block:
+        break;
+        
+    case L_block:
+        break;
+
+    case J_block:
+        break;
+
+    case S_block:
+        break;
+
+    case Z_block:
+        break;
+    default:
+        break;
+    }
+    return 0;
+}
+
+
 int init_playarea(Gameboard* gb) {
     gb->rows = DEFAULT_BOARD_ROWS;
     gb->columns = DEFAULT_BOARD_COLUMNS;
-    gb->playarea = (int*) 
-                    calloc(gb->rows * gb->columns, sizeof(int));
+    gb->playarea = calloc(gb->rows * gb->columns, sizeof(int));
+
     return 0;
 }
 int init_game(Game* game) {
@@ -84,6 +111,7 @@ int clear_row(Gameboard* gb, int row) {
     for(col = 0; col < gb->columns; ++col) {
         set_square(gb, row, col, EMPTY);
     }
+    return 0;
 }
 
 int lower_board(Gameboard* gb, int clearedRow) {
@@ -97,7 +125,7 @@ int lower_board(Gameboard* gb, int clearedRow) {
 }
 
 
-int print_gb(Gameboard* gb) {
+int print_gameboard(Gameboard* gb) {
     int row, column;
     printf(
         "Rows: %d\n"
@@ -107,7 +135,6 @@ int print_gb(Gameboard* gb) {
         gb->columns
     );
     for(row = 0; row < gb->rows; ++row) {
-        //printf("%d: ", row);
         for(column = 0; column < gb->columns; ++column) {
             if(get_square(gb, row,column)) {
                 printf("X");
@@ -118,22 +145,18 @@ int print_gb(Gameboard* gb) {
         printf("\n");
     }
 }
+
 int print_game(Game* game) {
     printf(
         "Score: %d\n",
         game->score
     );
-    print_gb(game->gb);
+    print_gameboard(game->gb);
 }
 
 int main(void* argc, void* argv) {
-    Game* game = (Game*) calloc(1, sizeof(Game));
+    Game* game = calloc(1, sizeof(Game));
     init_game(game);
-    set_square(game->gb, game->gb->rows-1,game->gb->columns-1, OCCUPIED);
-    set_square(game->gb, 0,0, OCCUPIED);
-    print_game(game);
-    
-    lower_board(game->gb, 10);
     print_game(game);
     return 0;
 }
