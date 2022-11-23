@@ -9,6 +9,23 @@
 #define OCCUPIED 1
 #define EMPTY 0
 
+enum TETRIMINO {
+    O_block, // Square block, yellow
+    I_block, // Line block, blue
+    T_block, // T block, purple
+    L_block, // L block, facing right, orange
+    J_block, // Reverse L block, facing left, dark blue
+    S_block, // S block, green
+    Z_block, // Reverse S block, red  
+    emptyBlock, // No Block
+};
+
+enum ROTATION {
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST
+};
 
 int init_playarea(Gameboard* gb) {
     gb->rows = DEFAULT_BOARD_ROWS;
@@ -62,6 +79,7 @@ int lower_board(Gameboard* gb, int clearedRow) {
         }
     }
     clear_row(gb, 0);
+    return 0;
 }
 
 
@@ -79,11 +97,12 @@ int print_gameboard(Gameboard* gb) {
             if(get_square(gb, row,column)) {
                 printf("X");
             } else {
-                printf("O");
+                printf("~");
             }
         }
         printf("\n");
     }
+    return 0;
 }
 
 int print_game(Game* game) {
@@ -92,11 +111,78 @@ int print_game(Game* game) {
         game->score
     );
     print_gameboard(game->gb);
+
+    return 0;
+}
+
+int manipulate_block(Gameboard* gb, int blockType, int row, int column, int occupied) {
+    switch(blockType) {
+        case O_block:
+            set_square(gb, row, column, occupied);
+            set_square(gb, row+1, column, occupied);
+            set_square(gb, row, column+1, occupied);
+            set_square(gb, row+1, column+1, occupied);
+            break;
+        case I_block:
+            set_square(gb, row, column, occupied);
+            set_square(gb, row, column+1, occupied);
+            set_square(gb, row, column+2, occupied);
+            set_square(gb, row, column+3, occupied);
+            break;
+        case T_block:
+            set_square(gb, row, column+1, occupied);
+            set_square(gb, row+1, column, occupied);
+            set_square(gb, row+1, column+2, occupied);
+            set_square(gb, row+1, column+1, occupied);
+            break;
+        case L_block:
+            set_square(gb, row, column+2, occupied);
+            set_square(gb, row+1, column, occupied);
+            set_square(gb, row+1, column+1, occupied);
+            set_square(gb, row+1, column+2, occupied);
+            break;
+        case J_block:
+            set_square(gb, row, column, occupied);
+            set_square(gb, row+1, column, occupied);
+            set_square(gb, row+1, column+1, occupied);
+            set_square(gb, row+1, column+2, occupied);
+            break;
+        case S_block:
+            set_square(gb, row, column+1, occupied);
+            set_square(gb, row+1, column, occupied);
+            set_square(gb, row, column+2, occupied);
+            set_square(gb, row+1, column+1, occupied);
+            break;
+        case Z_block:
+            set_square(gb, row, column, occupied);
+            set_square(gb, row+1, column+2, occupied);
+            set_square(gb, row, column+1, occupied);
+            set_square(gb, row+1, column+1, occupied);
+        default:
+            break;
+    }
+}
+int spawn_block(Gameboard* gb, int blockType, int row, int column) {
+    gb->curBlockCol = column;
+    gb->curBlockRow = row;
+    gb->curBlockType = blockType;
+    gb->curBlockRotation = NORTH;
+    manipulate_block(gb, blockType, row, column, OCCUPIED);
+}
+
+int drop_block(Gameboard* gb) {
+    manipulate_block(gb, gb->curBlockType, gb->curBlockRow, gb->curBlockCol, EMPTY);
+    gb->curBlockRow++;
+    spawn_block(gb, gb->curBlockType, gb->curBlockRow, gb->curBlockCol);
 }
 
 int main(void* argc, void* argv) {
     Game* game = calloc(1, sizeof(Game));
     init_game(game);
+    print_game(game);
+    spawn_block(game->gb, T_block, 1, 1);
+    print_game(game);
+    drop_block(game->gb);
     print_game(game);
     return 0;
 }
