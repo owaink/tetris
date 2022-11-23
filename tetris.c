@@ -8,16 +8,48 @@
 #define OCCUPIED 1
 #define EMPTY 0
 
-enum Tetrimino {
-    O_block, // Square block, yellow
-    I_block, // Line block, blue
-    T_block, // T block, purple
-    L_block, // L block, facing right, orange
-    J_block, // Reverse L block, facing left, dark blue
-    S_block, // S block, green
-    Z_block, // Reverse S block, red  
-    emptyBlock, // No Block
-};
+static const int O_block[4] = {
+                                1,1,
+                                1,1, 
+                            };
+
+static const int I_block[16] = {
+                                0,0,0,0,
+                                1,1,1,1, 
+                                0,0,0,0, 
+                                0,0,0,0
+                            };
+
+static const int T_block[9] = {
+                                0,1,0,
+                                1,1,1, 
+                                0,0,0
+                            };
+
+static const int L_block[9] = {
+                                0,0,1,
+                                1,1,1, 
+                                0,0,0
+                            };
+
+static const int J_block[9] = {
+                                1,0,0,
+                                1,1,1, 
+                                0,0,0
+                            };
+
+static const int S_block[9] = {
+                                0,1,1,
+                                1,1,0, 
+                                0,0,0
+                            };
+
+static const int Z_block[9] = {
+                                1,1,0,
+                                0,1,1, 
+                                0,0,0
+                            };
+
 
 typedef struct {
     int type;
@@ -35,39 +67,8 @@ typedef struct {
     int score;
     Gameboard* gb;
     Block* currentBlock;
-    int heldBlock;
+    Block* heldBlock;
 } Game;
-
-int init_block(Block* b, int type) {
-    b->type = emptyBlock;
-    b->area = calloc(16, sizeof(int));
-    switch (type)
-    {
-    case O_block:
-        break;
-
-    case I_block:
-        break;
-
-    case T_block:
-        break;
-        
-    case L_block:
-        break;
-
-    case J_block:
-        break;
-
-    case S_block:
-        break;
-
-    case Z_block:
-        break;
-    default:
-        break;
-    }
-    return 0;
-}
 
 
 int init_playarea(Gameboard* gb) {
@@ -79,7 +80,7 @@ int init_playarea(Gameboard* gb) {
 }
 int init_game(Game* game) {
     game->score = 0;
-    game->heldBlock = emptyBlock;
+    game->heldBlock = 0;
     game->gb = calloc(1, sizeof(Gameboard));
     init_playarea(game->gb);
 
