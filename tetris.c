@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "tetris.h"
 
 #define DEFAULT_BOARD_ROWS 20
 #define DEFAULT_BOARD_COLUMNS 10
@@ -7,36 +8,6 @@
 #define TICK_RATE 60 // Ticks per second
 #define OCCUPIED 1
 #define EMPTY 0
-
-enum Tetrimino {
-    O_block, // Square block, yellow
-    I_block, // Line block, blue
-    T_block, // T block, purple
-    L_block, // L block, facing right, orange
-    J_block, // Reverse L block, facing left, dark blue
-    S_block, // S block, green
-    Z_block, // Reverse S block, red  
-    emptyBlock, // No Block
-};
-
-typedef struct {
-    int type;
-    int* area;
-
-} Block;
-
-typedef struct {
-    int rows;
-    int columns;
-    int* playarea;
-} Gameboard;
-
-typedef struct {
-    int score;
-    Gameboard* gb;
-    Block* currentBlock;
-    int heldBlock;
-} Game;
 
 int init_block(Block* b, int type) {
     b->type = emptyBlock;
