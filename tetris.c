@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "tetris.h"
 
 #define DEFAULT_BOARD_ROWS 20
 #define DEFAULT_BOARD_COLUMNS 10
