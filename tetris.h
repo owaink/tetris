@@ -1,14 +1,3 @@
-enum Tetrimino {
-    O_block, // Square block, yellow
-    I_block, // Line block, blue
-    T_block, // T block, purple
-    L_block, // L block, facing right, orange
-    J_block, // Reverse L block, facing left, dark blue
-    S_block, // S block, green
-    Z_block, // Reverse S block, red  
-    emptyBlock, // No Block
-};
-
 typedef struct {
     int type;
     int* area;
