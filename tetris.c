@@ -125,9 +125,11 @@ int init_block(Block* b, const int* type, int row, int column) {
     return 0;
 }
 
-int move_block(Block* b, int rowsDown, int columnsRight) {
-    b->row += rowsDown;
-    b->col += columnsRight;
+int move_block(Gameboard* gb, int rowsDown, int columnsRight) {
+    clear_block(gb, gb->curBlock);
+    gb->curBlock->row += rowsDown;
+    gb->curBlock->col += columnsRight;
+    write_block(gb, gb->curBlock);
     return 0;
 }
 void swap(int* x, int* y) {
@@ -150,6 +152,12 @@ int write_block(Gameboard* gb, Block* b) {
     }
 }
 
+int clear_block(Gameboard* gb, Block* b) {
+    int* i;
+    for(i = b->squares; i < (b->squares+8); i += 2) {
+        set_square(gb, b->row + *i, b->col + *(i+1), EMPTY);
+    }
+}
 int main(void* argc, void* argv) {
     Game* game = calloc(1, sizeof(Game));
     init_game(game);
