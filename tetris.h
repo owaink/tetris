@@ -1,66 +1,57 @@
 typedef struct {
-    int type;
-
+    __uint8_t row;
+    __uint8_t col;
+    __uint8_t* squares;
 } Block;
 
 typedef struct {
-    int rows;
-    int columns;
-    int* playarea;
-    int curBlockRow;
-    int curBlockCol;
-    int curBlockType;
-    int curBlockRotation;
+    __uint8_t rows;
+    __uint8_t columns;
+    __uint8_t* playarea;
+    Block* curBlock;
 } Gameboard;
 
 typedef struct {
     int score;
     Gameboard* gb;
-    int heldBlock;
+    Block* heldBlock;
 } Game;
-// static const int O_block[4] = {
-//                                 1,1,
-//                                 1,1, 
-//                             };
+static const __uint8_t* O_block[4][2] = {
+    { 0, 0},    { 0, 1},
+    { 1, 0},    { 1, 1}
+    };
 
-// static const int I_block[16] = {
-//                                 0,0,0,0,
-//                                 1,1,1,1, 
-//                                 0,0,0,0, 
-//                                 0,0,0,0
-//                             };
+static const __uint8_t* I_block[4][2] = {
+    {0,-1},{0,0},{0,1},{0,2}
+};
 
-// static const int T_block[9] = {
-//                                 0,1,0,
-//                                 1,1,1, 
-//                                 0,0,0
-//                             };
+static const __uint8_t* T_block[4][2] = {
+                {-1, 0},
+    { 0,-1},    { 0, 0},    { 0, 1}
+};
 
-// static const int L_block[9] = {
-//                                 0,0,1,
-//                                 1,1,1, 
-//                                 0,0,0
-//                             };
+static const __uint8_t* L_block[4][2] = {
+                            {-1, 1},
+    { 0,-1},    { 0, 0},    { 0, 1}
+};
 
-// static const int J_block[9] = {
-//                                 1,0,0,
-//                                 1,1,1, 
-//                                 0,0,0
-//                             };
+static const __uint8_t* J_block[4][2] = {
+    {-1,-1},
+    { 0,-1},    { 0, 0},    { 0, 1}
+};
 
-// static const int S_block[9] = {
-//                                 0,1,1,
-//                                 1,1,0, 
-//                                 0,0,0
-//                             };
 
-// static const int Z_block[9] = {
-//                                 1,1,0,
-//                                 0,1,1, 
-//                                 0,0,0
-//                             };
+static const __uint8_t* S_block[4][2] = {
+                {-1, 0},    {-1, 1},
+    { 0,-1},    { 0, 0}
+};
 
-int init_block(Block* b, int type);
+static const __uint8_t* Z_block[4][2] = {
+    {-1,-1},    {-1, 0},
+                { 0, 0},    { 0, 1}
+};
+
+int init_block(Block* b, const int* type, int row, int column);
 int init_playarea(Gameboard* gb);
 int get_square(Gameboard* gb, int row, int column);
 int set_square(Gameboard* gb, int row, int column, int occupied);

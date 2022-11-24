@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "tetris.h"
 
 #define DEFAULT_BOARD_ROWS 20
@@ -9,16 +10,16 @@
 #define OCCUPIED 1
 #define EMPTY 0
 
-enum TETRIMINO {
-    O_block, // Square block, yellow
-    I_block, // Line block, blue
-    T_block, // T block, purple
-    L_block, // L block, facing right, orange
-    J_block, // Reverse L block, facing left, dark blue
-    S_block, // S block, green
-    Z_block, // Reverse S block, red  
-    emptyBlock, // No Block
-};
+// enum TETRIMINO {
+//     O_block, // Square block, yellow
+//     I_block, // Line block, blue
+//     T_block, // T block, purple
+//     L_block, // L block, facing right, orange
+//     J_block, // Reverse L block, facing left, dark blue
+//     S_block, // S block, green
+//     Z_block, // Reverse S block, red  
+//     emptyBlock, // No Block
+// };
 
 enum ROTATION {
     NORTH,
@@ -31,7 +32,8 @@ int init_playarea(Gameboard* gb) {
     gb->rows = DEFAULT_BOARD_ROWS;
     gb->columns = DEFAULT_BOARD_COLUMNS;
     gb->playarea = calloc(gb->rows * gb->columns, sizeof(int));
-
+    gb->curBlock = calloc(1, sizeof(Block));
+    init_block(gb->curBlock, (const int*) T_block, 2, 2);
     return 0;
 }
 int init_game(Game* game) {
@@ -115,74 +117,44 @@ int print_game(Game* game) {
     return 0;
 }
 
-int manipulate_block(Gameboard* gb, int blockType, int row, int column, int occupied) {
-    switch(blockType) {
-        case O_block:
-            set_square(gb, row, column, occupied);
-            set_square(gb, row+1, column, occupied);
-            set_square(gb, row, column+1, occupied);
-            set_square(gb, row+1, column+1, occupied);
-            break;
-        case I_block:
-            set_square(gb, row, column, occupied);
-            set_square(gb, row, column+1, occupied);
-            set_square(gb, row, column+2, occupied);
-            set_square(gb, row, column+3, occupied);
-            break;
-        case T_block:
-            set_square(gb, row, column+1, occupied);
-            set_square(gb, row+1, column, occupied);
-            set_square(gb, row+1, column+2, occupied);
-            set_square(gb, row+1, column+1, occupied);
-            break;
-        case L_block:
-            set_square(gb, row, column+2, occupied);
-            set_square(gb, row+1, column, occupied);
-            set_square(gb, row+1, column+1, occupied);
-            set_square(gb, row+1, column+2, occupied);
-            break;
-        case J_block:
-            set_square(gb, row, column, occupied);
-            set_square(gb, row+1, column, occupied);
-            set_square(gb, row+1, column+1, occupied);
-            set_square(gb, row+1, column+2, occupied);
-            break;
-        case S_block:
-            set_square(gb, row, column+1, occupied);
-            set_square(gb, row+1, column, occupied);
-            set_square(gb, row, column+2, occupied);
-            set_square(gb, row+1, column+1, occupied);
-            break;
-        case Z_block:
-            set_square(gb, row, column, occupied);
-            set_square(gb, row+1, column+2, occupied);
-            set_square(gb, row, column+1, occupied);
-            set_square(gb, row+1, column+1, occupied);
-        default:
-            break;
-    }
-}
-int spawn_block(Gameboard* gb, int blockType, int row, int column) {
-    gb->curBlockCol = column;
-    gb->curBlockRow = row;
-    gb->curBlockType = blockType;
-    gb->curBlockRotation = NORTH;
-    manipulate_block(gb, blockType, row, column, OCCUPIED);
+int init_block(Block* b, const int* type, int row, int column) {
+    b->col = column;
+    b->row = row;
+    b->squares = calloc(8, sizeof(int));
+    memcpy(b->squares, type, sizeof(int)*8);
+    return 0;
 }
 
-int drop_block(Gameboard* gb) {
-    manipulate_block(gb, gb->curBlockType, gb->curBlockRow, gb->curBlockCol, EMPTY);
-    gb->curBlockRow++;
-    spawn_block(gb, gb->curBlockType, gb->curBlockRow, gb->curBlockCol);
+int move_block(Block* b, int rowsDown, int columnsRight) {
+    b->row += rowsDown;
+    b->col += columnsRight;
+    return 0;
+}
+void swap(int* x, int* y) {
+    *x = *x ^ *y;
+    *y = *x ^ *y;
+    *x = *x ^ *y;
+}
+int rotate_block(Block* b) {
+    int* i;
+    for(i = b->squares; i < b->squares+8; i += 2) {
+        *i = *i * -1;
+        swap(i, i+1);
+    }
+}
+
+int write_block(Gameboard* gb, Block* b) {
+    int* i;
+    for(i = b->squares; i < (b->squares+8); i += 2) {
+        set_square(gb, b->row + *i, b->col + *(i+1), OCCUPIED);
+    }
 }
 
 int main(void* argc, void* argv) {
     Game* game = calloc(1, sizeof(Game));
     init_game(game);
+    write_block(game->gb, game->gb->curBlock);
     print_game(game);
-    spawn_block(game->gb, T_block, 1, 1);
-    print_game(game);
-    drop_block(game->gb);
-    print_game(game);
+    
     return 0;
 }
