@@ -10,30 +10,12 @@
 #define OCCUPIED 1
 #define EMPTY 0
 
-// enum TETRIMINO {
-//     O_block, // Square block, yellow
-//     I_block, // Line block, blue
-//     T_block, // T block, purple
-//     L_block, // L block, facing right, orange
-//     J_block, // Reverse L block, facing left, dark blue
-//     S_block, // S block, green
-//     Z_block, // Reverse S block, red  
-//     emptyBlock, // No Block
-// };
-
-enum ROTATION {
-    NORTH,
-    EAST,
-    SOUTH,
-    WEST
-};
-
 int init_playarea(Gameboard* gb) {
     gb->rows = DEFAULT_BOARD_ROWS;
     gb->columns = DEFAULT_BOARD_COLUMNS;
     gb->playarea = calloc(gb->rows * gb->columns, sizeof(int));
     gb->curBlock = calloc(1, sizeof(Block));
-    init_block(gb->curBlock, (const int*) T_block, 2, 2);
+    init_block(gb->curBlock, (const int*) I_block, 2, 2);
     return 0;
 }
 int init_game(Game* game) {
@@ -125,13 +107,7 @@ int init_block(Block* b, const int* type, int row, int column) {
     return 0;
 }
 
-int move_block(Gameboard* gb, int rowsDown, int columnsRight) {
-    clear_block(gb, gb->curBlock);
-    gb->curBlock->row += rowsDown;
-    gb->curBlock->col += columnsRight;
-    write_block(gb, gb->curBlock);
-    return 0;
-}
+
 void swap(int* x, int* y) {
     *x = *x ^ *y;
     *y = *x ^ *y;
@@ -158,9 +134,17 @@ int clear_block(Gameboard* gb, Block* b) {
         set_square(gb, b->row + *i, b->col + *(i+1), EMPTY);
     }
 }
+int move_block(Gameboard* gb, int rowsDown, int columnsRight) {
+    clear_block(gb, gb->curBlock);
+    gb->curBlock->row += rowsDown;
+    gb->curBlock->col += columnsRight;
+    write_block(gb, gb->curBlock);
+    return 0;
+}
 int main(void* argc, void* argv) {
     Game* game = calloc(1, sizeof(Game));
     init_game(game);
+    //rotate_block(game->gb->curBlock);
     write_block(game->gb, game->gb->curBlock);
     print_game(game);
     
