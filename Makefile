@@ -5,18 +5,18 @@ BIN     := bin
 SRC     := src
 INCLUDE := include
 
-LIBRARIES   :=
-EXECUTABLE  := main
+LIBRARIES   := 
+EXECUTABLE  := tetris
 
 
 all: $(BIN)/$(EXECUTABLE)
 
 run: clean all
-    clear
-    ./$(BIN)/$(EXECUTABLE)
+	clear
+	./$(BIN)/$(EXECUTABLE)
 
 $(BIN)/$(EXECUTABLE): $(SRC)/*.c
-    $(CXX) $(CXX_FLAGS) -I$(INCLUDE) $^ -o $@ $(LIBRARIES)
+	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) $^ -o $@ $(LIBRARIES)
 
 clean:
-    -rm $(BIN)/*
+	-rm $(BIN)/*
