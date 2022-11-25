@@ -8,7 +8,12 @@ typedef struct {
     Tetrimino* heldTet;
 } Game;
 
-Game* create_game();
+enum SQUARE {
+    EMPTY,
+    OCCUPIED,
+    ACTIVE
+};
+
 int init_game(Game* game);
 int destory_game(Game* game);
 
@@ -20,3 +25,6 @@ int lower_board(Game* game, int clearedRow);
 
 int get_square(Game* game, int row, int column);
 int set_square(Game* game, int row, int column, int occupied);
+
+int commit_tetrimino(Game* game, Tetrimino* t);
+int display_active_tetrimino(Game* game);

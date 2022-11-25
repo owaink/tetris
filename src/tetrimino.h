@@ -1,8 +1,7 @@
 typedef struct {
     int row;
     int col;
-    const int* type;
-    int rotation;
+    int* squares;
 } Tetrimino;
 
 static const int O_TETRIMINO[4][2] = {
@@ -29,7 +28,6 @@ static const int J_TETRIMINO[4][2] = {
     { 0,-1},    { 0, 0},    { 0, 1}
 };
 
-
 static const int S_TETRIMINO[4][2] = {
                 {-1, 0},    {-1, 1},
     { 0,-1},    { 0, 0}
@@ -45,16 +43,8 @@ enum DIRECTION {
     COUNTERCLOCKWISE
 };
 
-enum ROTATION {
-    NORTH,
-    EAST,
-    SOUTH,
-    WEST
-};
-
-Tetrimino* create_tetriminio(void);
 int init_tetrimino(Tetrimino* t);
-int destory_tetrimino(Tetrimino* t);
+int destroy_tetrimino(Tetrimino* t);
 
 int rotate_tetrimino(Tetrimino* t, int direction);
 int move_tetrimino(Tetrimino* t, int row, int column);
