@@ -2,35 +2,40 @@
 #include <stdio.h>
 #include "game.h"
 
-#define DEFAULT_BOARD_ROWS 20
-#define DEFAULT_BOARD_COLUMNS 10
+#define DEFAULT_BOARD_ROWS 20 // vertical space for the play area
+#define DEFAULT_BOARD_COLUMNS 10 // horizontal space for the play area
+#define SAFETY_ROWS 2 // rows above the board
 
 int init_game(Game* game) {
     game->score = 0;
     game->rows = DEFAULT_BOARD_ROWS;
     game->columns = DEFAULT_BOARD_COLUMNS;
 
-    game->playarea = calloc(game->rows * game->columns, sizeof(int));
+    // Allocate memory for the visible play space,
+    // plus 2 hidden rows above the top row for safety
+    game->playarea = calloc((game->rows+SAFETY_ROWS) * game->columns, sizeof(int));
     if(game->playarea == NULL) {
         return -1;
     }
+    game->playarea += (game->columns)*SAFETY_ROWS;
 
     game->activeTet = calloc(1, sizeof(Tetrimino));
     if(game->activeTet == NULL) {
         return -2;
     }
-    init_tetrimino(game->activeTet);
+    init_tetrimino(game->activeTet, (int*)O_TETRIMINO);
 
     game->heldTet = calloc(1, sizeof(Tetrimino));
     if(game->heldTet == NULL) {
         return -3;
     }
-    init_tetrimino(game->heldTet);
+    init_tetrimino(game->heldTet,(int*)NULL_TETRIMINO);
 
     return 0;
 }
 
 int destroy_game(Game* game) {
+    game->playarea -= (game->columns)*SAFETY_ROWS;
     free(game->playarea);
     game->playarea = NULL;
     free(game->activeTet);

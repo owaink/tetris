@@ -3,11 +3,11 @@
 #include "tetrimino.h"
 #include "utils.h"
 
-int init_tetrimino(Tetrimino* t) {
-    t->col = 0;
-    t->row = 0;
+int init_tetrimino(Tetrimino* t, const int* type) {
+    t->col = 4;
+    t->row = 1;
     t->squares = calloc(8, sizeof(int));
-    memcpy(t->squares, T_TETRIMINO, sizeof(int)*8);
+    memcpy(t->squares, type, sizeof(int)*8);
     return 0;
 }
 
