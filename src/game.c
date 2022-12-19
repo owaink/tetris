@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <ncurses.h>
 #include "game.h"
 
 #define DEFAULT_BOARD_ROWS 20 // vertical space for the play area
@@ -47,26 +48,36 @@ int destroy_game(Game* game) {
     return 0;
 }
 
-int print_game(Game* game) {
+int print_game_info(Game* game) {
+    move(0,0);
+    printw("Score: %d", game->score);
+    move(1,0);
+    printw("Rows: %d", game->rows);
+    move(2,0);
+    printw("Columns: %d", game->columns);
+    move(3,0);
+}
+
+int print_gameboard(Game* game) {
+    print_game_info(game);
     int row, column;
-    printf(
-        "Score: %d\n"
-        "Rows: %d\n"
-        "Columns: %d\n"
-        "Gameboard: \n",
-        game->score,
-        game->rows,
-        game->columns
-    );
     for(row = 0; row < game->rows; ++row) {
         for(column = 0; column < game->columns; ++column) {
             if(get_square(game, row,column)) {
-                printf("X");
+                printw("X");
             } else {
-                printf("~");
+                printw("~");
             }
         }
-        printf("\n");
+        move(stdscr->_cury+1, 0);
+    }
+
+    move(3+game->activeTet->row, game->activeTet->col);
+    int *i;
+    for(i = game->activeTet->squares; i < game->activeTet->squares+8; i+=2) {
+        move(stdscr->_cury+(*(i+1)), stdscr->_curx+(*i));
+        printw("O");
+        move(3+game->activeTet->row, game->activeTet->col);
     }
 
     return 0;
@@ -110,20 +121,23 @@ int set_square(Game* game, int row, int column, int occupied) {
     game->playarea[row * game->columns + column] = occupied;
     return 0;
 }
-
-int display_active_tetrimino(Game* game) {
-    int* i;
-    for(i = game->activeTet->squares; i < game->activeTet->squares+8; i+=2) {
-        set_square(game, *i+game->activeTet->row, *(i+1)+game->activeTet->col, ACTIVE);
-    }
-    return 0;
+int update_board(Game* game) {
+    
 }
 
-int commit_tetrimino(Game* game, Tetrimino* t) {
-    int* i;
-    for(i = t->squares; i < t->squares+8; i+=2) {
-        set_square(game, *i+game->activeTet->row, *(i+1)+game->activeTet->col, OCCUPIED);
-    }
-    destroy_tetrimino(t);
-    return 0;
-}
+// int display_active_tetrimino(Game* game) {
+//     int* i;
+//     for(i = game->activeTet->squares; i < game->activeTet->squares+8; i+=2) {
+//         set_square(game, *i+game->activeTet->row, *(i+1)+game->activeTet->col, ACTIVE);
+//     }
+//     return 0;
+// }
+
+// int commit_tetrimino(Game* game, Tetrimino* t) {
+//     int* i;
+//     for(i = t->squares; i < t->squares+8; i+=2) {
+//         set_square(game, *i+game->activeTet->row, *(i+1)+game->activeTet->col, OCCUPIED);
+//     }
+//     destroy_tetrimino(t);
+//     return 0;
+// }

@@ -1,9 +1,9 @@
 CXX       := gcc
-CXX_FLAGS := -ggdb
+CXX_FLAGS := -ggdb -lncurses
 
 BIN     := bin
 SRC     := src
-INCLUDE := include
+INCLUDE := /usr/include/
 
 LIBRARIES   := 
 EXECUTABLE  := tetris

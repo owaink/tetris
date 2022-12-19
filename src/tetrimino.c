@@ -29,8 +29,14 @@ int rotate_tetrimino(Tetrimino* t, int direction) {
     return 0;
 }
 
-int move_tetrimino(Tetrimino* t, int row, int column) {
-    t->col += column;
-    t->row += row;
+int move_tetrimino(Tetrimino* t, int rows, int columns) {
+    t->col += columns;
+    t->row += rows;
+    return 0;
+}
+
+int set_tetrimino_position(Tetrimino* t, int row, int column) {
+    t->col = column;
+    t->row = row;
     return 0;
 }

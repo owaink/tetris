@@ -49,4 +49,6 @@ int init_tetrimino(Tetrimino* t, const int* type);
 int destroy_tetrimino(Tetrimino* t);
 
 int rotate_tetrimino(Tetrimino* t, int direction);
-int move_tetrimino(Tetrimino* t, int row, int column);
+int move_tetrimino(Tetrimino* t, int rows, int columns);
+
+int set_tetrimino_position(Tetrimino* t, int row, int column);
